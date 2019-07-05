@@ -218,7 +218,13 @@ resource "aws_instance" "devtools" {
 		aws_security_group.ssh_sg.id,
 		aws_security_group.allow_all_outgoing.id,
 	]
-	user_data = file("devtools.sh")
+	user_data = templatefile(
+		"ansible.tt",
+		{
+			ssh_key = var.ansible_key_name
+			s3_bucket = aws_s3_bucket.ansible_pubkey.bucket
+		}
+	)
 	tags = merge(
 		local.common_tags,
 		{
@@ -239,6 +245,13 @@ resource "aws_instance" "ci" {
 		aws_security_group.ssh_sg.id,
 		aws_security_group.allow_all_outgoing.id,
 	]
+	user_data = templatefile(
+		"node.tt",
+		{
+			ssh_key = var.ansible_key_name
+			s3_bucket = aws_s3_bucket.ansible_pubkey.bucket
+		}
+	)
 	tags = merge(
 		local.common_tags,
 		{
@@ -259,6 +272,13 @@ resource "aws_instance" "qa" {
 		aws_security_group.ssh_sg.id,
 		aws_security_group.allow_all_outgoing.id,
 	]
+	user_data = templatefile(
+		"node.tt",
+		{
+			ssh_key = var.ansible_key_name
+			s3_bucket = aws_s3_bucket.ansible_pubkey.bucket
+		}
+	)
 	tags = merge(
 		local.common_tags,
 		{

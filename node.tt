@@ -1,0 +1,22 @@
+#!/bin/bash
+
+yum upgrade -y
+
+adduser ansible
+home=/home/ansible
+
+cat > /etc/sudoers.d/00-ansible <<EOF
+ansible ALL=(ALL) NOPASSWD: ALL
+EOF
+
+mkdir -p $home/.ssh/
+i=0
+while ! aws s3 cp s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys; do
+	sleep 1
+	echo $((i++)) >> $home/.ssh/debug
+done
+
+
+chmod 600 $home/.ssh/authorized_keys
+chown -r ansible:ansible $home/.ssh
+

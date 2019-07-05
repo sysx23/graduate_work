@@ -1,0 +1,22 @@
+#!/bin/bash
+
+yum upgrade -y
+yum install -y git
+amazon-linux-extras install ansible2
+
+adduser ansible
+home=/home/ansible
+project=/usr/local/project
+
+cat > /etc/sudoers.d/00-ansible <<EOF
+ansible ALL=(ALL) NOPASSWD: ALL
+
+EOF
+
+git clone https://github.com/sysx23/graduate_work "$project"
+
+mkdir -p $home/.ssh/
+ssh-keygen -t rsa -b 2048 -f $home/.ssh/${ssh_key}
+chown -r ansible:ansible $home/.ssh
+
+aws s3 cp $home/.ssh/${ssh_key}.pub s3://${s3_bucket}/
