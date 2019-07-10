@@ -173,6 +173,11 @@ resource "aws_iam_role_policy_attachment" "ec2_ro_for_ansible" {
 	policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "elastic_cache_ro_for_ansible" {
+	role = aws_iam_role.devtools.name
+	policy_arn = "arn:aws:iam::aws:policy/AmazonElastiCacheReadOnlyAccess"
+}
+
 resource "aws_iam_role" "qa" {
 	name_prefix = "qa-"
 	assume_role_policy = file("ec2_assume_role.json")
