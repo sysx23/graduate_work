@@ -168,6 +168,11 @@ resource "aws_iam_role_policy_attachment" "devtools" {
 	policy_arn = aws_iam_policy.rw_access_to_ansible_pubkey.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_ro_for_ansible" {
+	role = aws_iam_role.devtools.name
+	policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
+
 resource "aws_iam_role" "qa" {
 	name_prefix = "qa-"
 	assume_role_policy = file("ec2_assume_role.json")
@@ -212,6 +217,12 @@ resource "aws_instance" "devtools" {
 	key_name = var.aws_keypair_name
 	associate_public_ip_address = true
 	iam_instance_profile = aws_iam_instance_profile.devtools.name
+	lifecycle {
+		ignore_changes = [
+			security_groups,
+			user_data,
+		]
+	}
 	security_groups = [
 		aws_security_group.allow_ssh.id,
 		aws_security_group.allow_http.id,
@@ -240,6 +251,12 @@ resource "aws_instance" "ci" {
 	key_name = var.aws_keypair_name
 	associate_public_ip_address = true
 	iam_instance_profile = aws_iam_instance_profile.ci.name
+	lifecycle {
+		ignore_changes = [
+			security_groups,
+			user_data,
+		]
+	}
 	security_groups = [
 		aws_security_group.allow_http.id,
 		aws_security_group.ssh_sg.id,
@@ -267,6 +284,12 @@ resource "aws_instance" "qa" {
 	key_name = var.aws_keypair_name
 	associate_public_ip_address = true
 	iam_instance_profile = aws_iam_instance_profile.qa.name
+	lifecycle {
+		ignore_changes = [
+			security_groups,
+			user_data,
+		]
+	}
 	security_groups = [
 		aws_security_group.allow_http.id,
 		aws_security_group.ssh_sg.id,

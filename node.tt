@@ -5,18 +5,19 @@ yum upgrade -y
 adduser ansible
 home=/home/ansible
 
+aws_updatekey_command="aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
 cat > /etc/sudoers.d/00-ansible <<EOF
 ansible ALL=(ALL) NOPASSWD: ALL
 EOF
 
+echo "*/5 * * * * ansible $aws_updatekey_command" >> /etc/cron.d/update_ssh_pubkey
+
 mkdir -p $home/.ssh/
-i=0
-while ! aws s3 cp s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys; do
+while ! $($aws_updatekey_command); do
 	sleep 1
-	echo $((i++)) >> $home/.ssh/debug
 done
 
 
 chmod 600 $home/.ssh/authorized_keys
-chown -r ansible:ansible $home/.ssh
+chown -R ansible:ansible $home/.ssh
 
