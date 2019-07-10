@@ -25,5 +25,6 @@ $($aws_updatekey_command)
 chown -R ansible:ansible $home/.ssh
 
 cd $project/ansible_project/
-ansible -i ec2.py -m ping > ping.out 2> ping.err
+ansible-playbook ansible_local.yml
 
+ansible-playbook -i ec2.py site.yml
