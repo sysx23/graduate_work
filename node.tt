@@ -13,9 +13,6 @@ EOF
 echo "*/5 * * * * ansible $aws_updatekey_command" >> /etc/cron.d/update_ssh_pubkey
 
 mkdir -p $home/.ssh/
-while ! $($aws_updatekey_command); do
-	sleep 1
-done
 
 
 chmod 600 $home/.ssh/authorized_keys

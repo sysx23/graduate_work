@@ -27,4 +27,3 @@ chown -R ansible:ansible $home/.ssh
 cd $project/ansible_project/
 ansible-playbook ansible_local.yml
 
-ansible-playbook -i ec2.py site.yml
