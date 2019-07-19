@@ -1,8 +1,8 @@
 #!/bin/bash
 
 yum upgrade -y
-yum install -y git
-amazon-linux-extras install ansible2
+yum install -y git python3
+pip3 install ansible
 
 adduser ansible
 home=/home/ansible

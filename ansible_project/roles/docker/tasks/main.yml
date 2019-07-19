@@ -1,0 +1,19 @@
+---
+
+- name: install docker
+  package:
+    name: docker
+    state: present
+  notify:
+    - start docker
+
+- name: install pip for python2
+  package:
+    name: python2-pip
+    state: present
+
+- name: Install docker-py and docker-compose
+  pip:
+    name: ['docker-py', 'docker-compose']
+    executable: pip2
+

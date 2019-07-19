@@ -1,0 +1,9 @@
+- name: copy Jenkins docker-compose project
+  synchronize:
+    src: jenkins
+    dest: ./
+
+- name: run Jenkins docker-compose project
+  docker_compose:
+    project_src: ./jenkins
+
