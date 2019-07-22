@@ -1,19 +1,23 @@
 ---
+- name: add docker repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
 
 - name: install docker
-  package:
-    name: docker
+  dnf:
+    name: docker-ce-3:18.09.1-3.el7
     state: present
-  notify:
-    - start docker
+    update_cache: yes
+    skip_broken: yes
 
-- name: install pip for python2
-  package:
-    name: python2-pip
-    state: present
-
-- name: Install docker-py and docker-compose
+- name: Install docker-compose
   pip:
-    name: ['docker-py', 'docker-compose']
-    executable: pip2
+    name: docker-compose
+    executable: pip3
 
+- name: start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
