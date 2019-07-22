@@ -1,13 +1,16 @@
-version: '3'
+version: '3.2'
 services:
   jenkins:
-  image: jenkins:2.60.3
-  ports:
-    - 8080:8080
-    - 50000:50000
-  volumes:
-    - type: bind
-      source: /var/jenkins
-      target: /var/jenkins_home
-  restart: always
+    image: jenkins:2.60.3
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - type: volume
+        source: jenkins_home
+        target: /var/jenkins_home
+    restart: always
+
+volumes:
+  jenkins_home:
 

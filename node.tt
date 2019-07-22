@@ -1,14 +1,21 @@
 #!/bin/bash
 
 yum upgrade -y
+yum install -y python3
+pip3 install awscli
 
 adduser ansible
 home=/home/ansible
 
-aws_updatekey_command="aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
+aws_updatekey_command="/usr/local/bin/aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
 cat > /etc/sudoers.d/00-ansible <<EOF
 ansible ALL=(ALL) NOPASSWD: ALL
 EOF
+
+cat >$home/.bashrc << EOF
+export PATH="\$PATH:/usr/local/bin"
+EOF
+chown ansible:ansible $home/.bashrc
 
 echo "*/5 * * * * ansible $aws_updatekey_command" >> /etc/cron.d/update_ssh_pubkey
 

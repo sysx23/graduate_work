@@ -5,7 +5,8 @@ variable "region" {
 
 variable "ami_id" {
 	type = string
-	default = "ami-0cc293023f983ed53"
+#	default = "ami-0cc293023f983ed53" # Amazon linux 2
+	default = "ami-0badcc5b522737046" # RHEL 8
 }
 
 variable "aws_keypair_name" {
@@ -74,21 +75,27 @@ resource "aws_s3_bucket" "ansible_pubkey" {
 	)
 }
 
-resource "aws_security_group" "allow_ssh" {
+resource "aws_security_group" "devtools" {
 	vpc_id = aws_vpc.graduate_work_vpc.id
-	name = "allow ssh"
+	name = "devtools_sg"
 	ingress {
 		cidr_blocks = ["0.0.0.0/0"]
 		protocol = "tcp"
 		from_port = "22"
 		to_port = "22"
 	}
+	ingress {
+		cidr_blocks = ["0.0.0.0/0"]
+		protocol = "tcp"
+		from_port = "8080"
+		to_port = "8080"
+	}
 	tags = local.common_tags
 }
 
-resource "aws_security_group" "ssh_sg" {
+resource "aws_security_group" "internal_ssh" {
 	vpc_id = aws_vpc.graduate_work_vpc.id
-	name = "ssh_sg"
+	name = "internal_ssh"
 	ingress {
 		self = true
 		protocol = "tcp"
@@ -229,9 +236,8 @@ resource "aws_instance" "devtools" {
 		]
 	}
 	security_groups = [
-		aws_security_group.allow_ssh.id,
-		aws_security_group.allow_http.id,
-		aws_security_group.ssh_sg.id,
+		aws_security_group.devtools.id,
+		aws_security_group.internal_ssh.id,
 		aws_security_group.allow_all_outgoing.id,
 	]
 	user_data = templatefile(
@@ -264,7 +270,7 @@ resource "aws_instance" "ci" {
 	}
 	security_groups = [
 		aws_security_group.allow_http.id,
-		aws_security_group.ssh_sg.id,
+		aws_security_group.internal_ssh.id,
 		aws_security_group.allow_all_outgoing.id,
 	]
 	user_data = templatefile(
@@ -297,7 +303,7 @@ resource "aws_instance" "qa" {
 	}
 	security_groups = [
 		aws_security_group.allow_http.id,
-		aws_security_group.ssh_sg.id,
+		aws_security_group.internal_ssh.id,
 		aws_security_group.allow_all_outgoing.id,
 	]
 	user_data = templatefile(
