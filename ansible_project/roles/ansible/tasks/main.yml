@@ -1,10 +1,3 @@
-- name: disable known_hosts for ansible
-  lineinfile:
-    path: /etc/ansible/ansible.cfg
-    insertafter: "^[^#]*[defaults]"
-    regexp: "^[#]*host_key_checking"
-    line: "host_key_checking = False" 
-
 - name: install python3
   package:
     name: python3
@@ -12,5 +5,5 @@
 - name: install ec2.py dependencies
   pip:
     executable: pip3
-    name: ['boto', 'ansible']
+    name: boto
 
