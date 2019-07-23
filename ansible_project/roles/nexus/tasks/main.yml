@@ -8,8 +8,27 @@
     src: docker-compose.yml.j2
     dest: "{{ docker_compose_dir }}/nexus/docker-compose.yml"
 
+- name: create swap space
+  command: fallocate -l 1GiB /nexusswap
+  when: ansible_swaptotal_mb < 1
+
+- name: make swap
+  command: mkswap /nexusswap
+  when: ansible_swaptotal_mb < 1
+
+- name: add to fstab
+  lineinfile:
+    path: /etc/fstab
+    regexp: "nexusswap"
+    line: "/nexusswap none swap sw 0 0"
+    state: present
+
+- name: turn swap
+  command: swapon -a
+
 - name: run nexus docker-compose project
   docker_compose:
     project_src: "{{ docker_compose_dir }}/nexus"
   tags:
     - start nexus
+
