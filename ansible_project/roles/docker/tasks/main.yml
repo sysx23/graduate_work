@@ -21,3 +21,9 @@
     name: docker
     state: started
     enabled: yes
+
+- name: create docker-compose directory
+  file:
+    dest: "{{ docker_compose_dir }}"
+    state: directory
+

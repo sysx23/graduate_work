@@ -83,12 +83,21 @@ resource "aws_security_group" "devtools" {
 		protocol = "tcp"
 		from_port = "22"
 		to_port = "22"
+		description = "public ssh"
 	}
 	ingress {
 		cidr_blocks = ["0.0.0.0/0"]
 		protocol = "tcp"
 		from_port = "8080"
 		to_port = "8080"
+		description = "public jenkins"
+	}
+	ingress {
+		cidr_blocks = ["0.0.0.0/0"]
+		protocol = "tcp"
+		from_port = "8081"
+		to_port = "8081"
+		description = "public nexus"
 	}
 	tags = local.common_tags
 }
@@ -251,6 +260,8 @@ resource "aws_instance" "devtools" {
 		local.common_tags,
 		{
 			"Name" = "devtools"
+			"jenkins" = ""
+			"nexus" = ""
 		}
 	)
 }

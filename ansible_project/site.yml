@@ -2,6 +2,11 @@
   vars_files:
     - group_vars/all.yml
 
-- hosts: tag_Name_devtools
+- hosts: tag_jenkins
   roles:
     - jenkins
+
+- hosts: tag_nexus
+  roles:
+    - nexus
+

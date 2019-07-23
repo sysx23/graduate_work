@@ -1,0 +1,21 @@
+version: '3.4'
+
+{% include 'roles/docker/templates/extra_hosts.j2' %}
+
+services:
+    nexus:
+      image: sonatype/nexus3:3.17.0
+      ports:
+      - 8081:8081
+      volumes:
+        - type: volume
+          source: nexus_data
+          target: /nexus-data
+      restart: always
+      environment:
+        - INSTALL4J_ADD_VM_PARAMS=-Xms1200m -Xmx1200m -XX:MaxDirectMemorySize=2g
+      extra_hosts: *default-extra_hosts
+
+volumes:
+  nexus_data:
+

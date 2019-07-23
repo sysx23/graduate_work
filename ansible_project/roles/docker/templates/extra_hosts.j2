@@ -1,0 +1,7 @@
+x-extra_hosts:
+  &default-extra_hosts
+  - "devtools:{{ hostvars[groups['tag_Name_devtools'][0]]['ec2_private_ip_address'] }}"
+  - "ci:{{ hostvars[groups['tag_Name_ci'][0]]['ec2_private_ip_address'] }}"
+  - "qa:{{ hostvars[groups['tag_Name_qa'][0]]['ec2_private_ip_address'] }}"
+  - "jenkins:{{ hostvars[groups['tag_jenkins'][0]]['ec2_private_ip_address'] }}"
+  - "nexus:{{ hostvars[groups['tag_nexus'][0]]['ec2_private_ip_address'] }}"
