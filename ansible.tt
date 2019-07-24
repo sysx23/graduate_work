@@ -1,19 +1,27 @@
 #!/bin/bash
 
-yum upgrade -y
-yum install -y git python3
-pip3 install git+https://github.com/ansible/ansible.git@stable-2.8
+case ${distribution} in
+	RHEL)
+		yum -y update
+		yum install -y git python3 ;;
+	SUSE)
+		zypper --non-interactive update
+		zypper --non-interactive install git python3-pip ;;
+	*) echo WARN: Distribution ${distribution} is not recognized >&2 ;;
+esac
+
+pip3 install ansible==2.8.2
 pip3 install awscli
 
-adduser ansible
+useradd ansible
 home=/home/ansible
 project=/usr/local/project
-aws_updatekey_command="/usr/local/bin/aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
+#aws_updatekey_command="/usr/local/bin/aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
+aws_updatekey_command="aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
 
 cat >$home/.bashrc << EOF
 export PATH="\$PATH:/usr/local/bin"
 EOF
-chown ansible:ansible $home/.bashrc
 
 cat > /etc/sudoers.d/00-ansible <<EOF
 ansible ALL=(ALL) NOPASSWD: ALL
@@ -28,7 +36,7 @@ mkdir -p $home/.ssh/
 ssh-keygen -t rsa -b 2048 -f $home/.ssh/${ssh_key}
 aws s3 cp $home/.ssh/${ssh_key}.pub s3://${s3_bucket}/
 $($aws_updatekey_command)
-chown -R ansible:ansible $home/.ssh
+chown -R ansible $home
 
 cd $project/ansible_project/
 ansible-playbook ansible_local.yml

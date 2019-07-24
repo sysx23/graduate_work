@@ -12,6 +12,10 @@
   command: fallocate -l 1GiB /nexusswap
   when: ansible_swaptotal_mb < 1
 
+- name: change permissions for swap
+  file: /nexusswap
+    mode: 0600
+
 - name: make swap
   command: mkswap /nexusswap
   when: ansible_swaptotal_mb < 1

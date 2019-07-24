@@ -9,6 +9,11 @@ variable "ami_id" {
 	default = "ami-0badcc5b522737046" # RHEL 8
 }
 
+variable "ami_distribution" {
+	type = string
+	default = "RHEL"
+}
+
 variable "aws_keypair_name" {
 	type = string
 	default = "graduate_work"
@@ -233,7 +238,7 @@ resource "aws_iam_instance_profile" "qa" {
 
 resource "aws_instance" "devtools" {
 	ami = var.ami_id
-	instance_type = "t2.micro"
+	instance_type = "t2.small"
 	subnet_id = aws_subnet.default_sn.0.id
 	key_name = var.aws_keypair_name
 	associate_public_ip_address = true
@@ -254,6 +259,7 @@ resource "aws_instance" "devtools" {
 		{
 			ssh_key = var.ansible_key_name
 			s3_bucket = aws_s3_bucket.ansible_pubkey.bucket
+			distribution = var.ami_distribution
 		}
 	)
 	tags = merge(
@@ -289,6 +295,7 @@ resource "aws_instance" "ci" {
 		{
 			ssh_key = var.ansible_key_name
 			s3_bucket = aws_s3_bucket.ansible_pubkey.bucket
+			distribution = var.ami_distribution
 		}
 	)
 	tags = merge(
@@ -322,6 +329,7 @@ resource "aws_instance" "qa" {
 		{
 			ssh_key = var.ansible_key_name
 			s3_bucket = aws_s3_bucket.ansible_pubkey.bucket
+			distribution = var.ami_distribution
 		}
 	)
 	tags = merge(

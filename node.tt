@@ -1,13 +1,21 @@
 #!/bin/bash
 
-yum upgrade -y
-yum install -y python3
+case ${distribution} in
+	RHEL)
+		yum -y update
+		yum install -y python3 ;;
+	SUSE)
+		zypper --non-interactive update
+		zypper --non-interactive install python3-pip ;;
+	*) echo WARN: Distribution ${distribution} is not recognized >&2 ;;
+esac
+
 pip3 install awscli
 
 adduser ansible
 home=/home/ansible
 
-aws_updatekey_command="/usr/local/bin/aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
+aws_updatekey_command="aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
 cat > /etc/sudoers.d/00-ansible <<EOF
 ansible ALL=(ALL) NOPASSWD: ALL
 EOF
@@ -23,5 +31,5 @@ mkdir -p $home/.ssh/
 
 
 chmod 600 $home/.ssh/authorized_keys
-chown -R ansible:ansible $home/.ssh
+chown -R ansible $home
 
