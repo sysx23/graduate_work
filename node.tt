@@ -12,7 +12,7 @@ esac
 
 pip3 install awscli
 
-adduser ansible
+useradd -m -U ansible
 home=/home/ansible
 
 aws_updatekey_command="aws s3 cp --quiet s3://${s3_bucket}/${ssh_key}.pub $home/.ssh/authorized_keys"
@@ -23,13 +23,10 @@ EOF
 cat >$home/.bashrc << EOF
 export PATH="\$PATH:/usr/local/bin"
 EOF
-chown ansible:ansible $home/.bashrc
 
 echo "*/5 * * * * ansible $aws_updatekey_command" >> /etc/cron.d/update_ssh_pubkey
 
 mkdir -p $home/.ssh/
 
-
-chmod 600 $home/.ssh/authorized_keys
 chown -R ansible $home
 
