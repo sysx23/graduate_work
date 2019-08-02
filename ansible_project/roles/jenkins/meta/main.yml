@@ -1,3 +1,4 @@
 dependencies:
-    - role: docker
+    - { role: docker, when: action == "spinup" }
+    - { role: backup, when: action == "backup" }
 

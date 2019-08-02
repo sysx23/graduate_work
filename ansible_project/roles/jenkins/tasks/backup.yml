@@ -1,0 +1,11 @@
+---
+
+- name: create archive for jenkins home
+  shell: "tar -C \"{{ jenkins_home }}\" -cpJ \
+            --same-owner \
+            --numeric-owner \
+            --exclude '_data/.*' \
+            --exclude _data/workspace \
+            . |
+            aws s3 cp - s3://{{ backup_bucket_name }}/jenkins.tar.xz"
+

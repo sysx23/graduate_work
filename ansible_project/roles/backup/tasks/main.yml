@@ -1,0 +1,21 @@
+---
+
+- name: Install jq
+  package:
+    name: jq
+    state: present
+
+- name: Copy script to host
+  copy:
+    src: get_bucket_by_name_tag.sh
+    dest: /opt/
+    mode: 0755
+
+- name: Get name of backup bucket
+  shell: /opt/get_bucket_by_name_tag.sh backup
+  register: command_output
+
+- name: Set bucket name
+  set_fact:
+    backup_bucket_name: "{{ command_output.stdout }}"
+

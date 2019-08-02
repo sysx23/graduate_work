@@ -4,7 +4,7 @@
 
 - hosts: tag_jenkins
   roles:
-    - jenkins
+    - { role: jenkins, action: spinup }
 
 - hosts: tag_nexus
   roles:

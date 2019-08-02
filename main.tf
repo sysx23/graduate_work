@@ -80,6 +80,16 @@ resource "aws_s3_bucket" "ansible_pubkey" {
 	)
 }
 
+resource "aws_s3_bucket" "backup" {
+	force_destroy = true
+	tags = merge(
+		local.common_tags,
+		{
+			Name = "backup"
+		}
+	)
+}
+
 resource "aws_security_group" "devtools" {
 	vpc_id = aws_vpc.graduate_work_vpc.id
 	name = "devtools_sg"
@@ -162,6 +172,25 @@ resource "aws_iam_policy" "rw_access_to_ansible_pubkey" {
 	policy = data.aws_iam_policy_document.rw_access_to_ansible_pubkey.json
 }
 
+data "aws_iam_policy_document" "rw_access_to_backup_bucket" {
+	statement {
+		actions = [
+			"s3:Get*",
+			"s3:ListBucket",
+			"s3:Put*",
+			"s3:Delete*"
+		]
+		resources = [
+			"${aws_s3_bucket.backup.arn}/*"
+		]
+	}
+}
+
+resource "aws_iam_policy" "rw_access_to_backup_bucket" {
+	name_prefix = "write_access_to_backup_bucket-"
+	policy = data.aws_iam_policy_document.rw_access_to_backup_bucket.json
+}
+
 data "aws_iam_policy_document" "read_access_to_ansible_pubkey" {
 	statement {
 		actions = [
@@ -178,15 +207,40 @@ resource "aws_iam_policy" "read_access_to_ansible_pubkey" {
 	policy = data.aws_iam_policy_document.read_access_to_ansible_pubkey.json
 }
 
+data "aws_iam_policy_document" "get_tag_resources" {
+	statement {
+		actions = [
+			"tag:getResources"
+		]
+		resources = [
+			"*"
+		]
+	}
+}
+
+resource "aws_iam_policy" "get_tag_resources" {
+	name_prefix = "get_tag_resources-"
+	policy = data.aws_iam_policy_document.get_tag_resources.json
+}
 resource "aws_iam_role" "devtools" {
 	name_prefix = "devtools-"
 	assume_role_policy = file("ec2_assume_role.json")
 	tags = local.common_tags
 }
 
-resource "aws_iam_role_policy_attachment" "devtools" {
+resource "aws_iam_role_policy_attachment" "devtools_rw_pubkey" {
 	role = aws_iam_role.devtools.name
 	policy_arn = aws_iam_policy.rw_access_to_ansible_pubkey.arn
+}
+
+resource "aws_iam_role_policy_attachment" "devtools_rw_backup" {
+	role = aws_iam_role.devtools.name
+	policy_arn = aws_iam_policy.rw_access_to_backup_bucket.arn
+}
+
+resource "aws_iam_role_policy_attachment" "devtools_get_tag_resource" {
+	role = aws_iam_role.devtools.name
+	policy_arn = aws_iam_policy.get_tag_resources.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_ro_for_ansible" {

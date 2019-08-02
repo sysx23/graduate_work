@@ -1,0 +1,16 @@
+- name: create directory for jenkins project in docker-compose
+  file:
+    dest: "{{ docker_compose_dir }}/jenkins"
+    state: directory
+
+- name: generate Jenkins docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ docker_compose_dir }}/jenkins/docker-compose.yml"
+
+- name: run Jenkins docker-compose project
+  docker_compose:
+    project_src: "{{ docker_compose_dir }}/jenkins"
+  tags:
+    - start jenkins
+

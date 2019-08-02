@@ -1,0 +1,4 @@
+- hosts: tag_jenkins
+  roles:
+    - { role: jenkins, action: backup }
+
