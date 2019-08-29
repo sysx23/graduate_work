@@ -38,6 +38,6 @@ aws s3 cp $home/.ssh/${ssh_key}.pub s3://${s3_bucket}/
 $($aws_updatekey_command)
 chown -R ansible $home
 
-cd $project/ansible_project/
+cd $project/ansible/
 ansible-playbook ansible_local.yml
 

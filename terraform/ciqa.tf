@@ -50,7 +50,7 @@ resource "aws_instance" "ci" {
     aws_security_group.allow_all_outgoing.id,
   ]
   user_data = templatefile(
-    "node.tt",
+    "ciqa.tt",
     {
       ssh_key      = var.ansible_key_name
       s3_bucket    = aws_s3_bucket.ansible_pubkey.bucket
@@ -84,7 +84,7 @@ resource "aws_instance" "qa" {
     aws_security_group.allow_all_outgoing.id,
   ]
   user_data = templatefile(
-    "node.tt",
+    "ciqa.tt",
     {
       ssh_key      = var.ansible_key_name
       s3_bucket    = aws_s3_bucket.ansible_pubkey.bucket
